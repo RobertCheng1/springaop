@@ -123,8 +123,9 @@ public class AppConfig {
 		 * 但运行期却动态“织入”了其他逻辑，因此，AOP本质上就是一个代理模式。
 		 * 因为Spring使用了CGLIB来实现运行期动态创建Proxy，如果我们没能深入理解其运行原理和实现机制，就极有可能遇到各种诡异的问题。
 		 *
-		 * 为什么（在 LoggingAspect 中给CustomerService）加了AOP就报NPE，去了AOP就一切正常？final字段不执行，难道JVM有问题？
+		 * 为什么（在 LoggingAspect 中给 CustomerService）加了AOP就报NPE，去了AOP就一切正常？final字段不执行，难道JVM有问题？
 		 * 为了解答这个诡异的问题，我们需要深入理解Spring使用CGLIB生成Proxy的原理：
+		 * （为了和已有的UserService、MailService区分： 下文讨论的 UserService 是指 CustomerService, MailService 是指 WeChatService）
 		 * 第一步，正常创建一个UserService的原始实例，这是通过反射调用构造方法实现的，它的行为和我们预期的完全一致；
 		 * 第二步，通过CGLIB创建一个UserService的子类，并引用了原始实例和LoggingAspect：
 		 * 		public UserService$$EnhancerBySpringCGLIB extends UserService {
