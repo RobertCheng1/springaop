@@ -181,6 +181,36 @@ public class AppConfig {
 		 * 但实际上，如果直接构造字节码，一个类的构造方法中，不一定非要调用super()。
 		 * Spring使用CGLIB构造的Proxy类，是直接生成字节码，并没有源码-编译-字节码这个步骤，===CGLIB可以这么神奇===
 		 * 因此：Spring通过CGLIB创建的代理类，不会初始化代理类自身继承的任何成员变量，包括final类型的成员变量！
+		 * 为什么Spring刻意不初始化Proxy继承的字段？来自下面评论
+		 *     1. 因为你初始化的时候很可能会用到注入的其他类：
+		 *         @Component
+		 *         public class MailService {
+		 *             @Value("${smtp.from:xxx}")
+		 *             String mailFrom;
+		 *
+		 *             SmtpSender sender;
+		 *
+		 *             @PostConstruct
+		 *             public void init() {
+		 *                 sender = new SmtpSender(mailFrom, ...);
+		 *             }
+		 *
+		 *             public void sentMail(String to) {
+		 *                 ...
+		 *             }
+		 *         }
+		 *     你看，MailService的字段sender初始化需要依赖其他注入，并且已经初始化了一次，proxy类没法正确初始化sender
+		 *     主要原因就是spring无法在逻辑上正常初始化proxy的字段，所以干脆不初始化，并通过NPE直接暴露出来
+		 *     2. 还有一个原因是如果对字段进行修改，proxy的字段其实根本没改：
+		 *         @Component
+		 *         public class MailService {
+		 *             String status = "init";
+		 *
+		 *             public void sentMail(String to) {
+		 *                 this.status = "sent";
+		 *             }
+		 *         }
+		 *     因为只有原始Bean的方法会对自己的字段进行修改，他无法改proxy的字段
 		 *
 		 * 启用了AOP，如何修复？
 		 * 修复很简单，只需要把直接访问字段的代码，改为通过方法访问。
