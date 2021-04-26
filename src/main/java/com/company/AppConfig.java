@@ -87,9 +87,9 @@ public class AppConfig {
 		 * Spring对接口类型使用JDK动态代理，对普通类使用CGLIB创建子类。如果一个Bean的class是final，Spring将无法为其创建子类。
 		 * 虽然Spring容器内部实现AOP的逻辑比较复杂（需要使用 AspectJ 解析注解，并通过CGLIB实现代理类），===说到Spring容器内部实现AOP的逻辑===
 		 * 但我们使用AOP非常简单，一共需要三步：
-		 *     定义执行方法，并在方法上通过 AspectJ 的注解告诉 Spring 应该在何处调用此方法；
-		 *     标记 @Component 和 @Aspect；
-		 *     在 @Configuration 类上标注 @EnableAspectJAutoProxy。
+		 *     1.定义执行方法，并在方法上通过 AspectJ 的注解告诉 Spring 应该在何处调用此方法；
+		 *     2.标记 @Component 和 @Aspect；
+		 *     3.在 @Configuration 类上标注 @EnableAspectJAutoProxy。
 		 * 至于AspectJ的注入语法则比较复杂，请参考Spring文档。
 		 * Spring也提供其他方法来装配AOP，但都没有使用AspectJ注解的方式来得简洁明了，所以我们不再作介绍。
 		 * 小结：
