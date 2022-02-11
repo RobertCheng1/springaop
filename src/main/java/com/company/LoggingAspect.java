@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 
-@Aspect
+@Aspect // Spring的IoC容器看到@EnableAspectJAutoProxy注解，就会自动查找带有@Aspect的Bean，然后根据每个方法的@Before、@Around等注解把AOP注入到特定的Bean中（和原文略有微调）from: 使用AOP--装配 AOP
 @Component
 public class LoggingAspect {
 	@Before("execution(public * com.company.service.UserService.*(..))")
